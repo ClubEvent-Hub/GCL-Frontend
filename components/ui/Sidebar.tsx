@@ -2,20 +2,37 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Home, Users, Calendar, FileText, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {
+  Home, Users, Calendar, FileText, LogOut, Menu, X,
+  Building2, User2, Globe,
+} from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false); // Mobile open/close
-  const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapsed
+  const [userType, setUserType] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const pathname = usePathname();
 
-  const navItems = [
-    
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Clubs', href: '/clubs', icon: Users },
-    { name: 'Events', href: '/event', icon: Calendar },
-    { name: 'Posts', href: '/post', icon: FileText },
-  ];
+  useEffect(() => {
+    const updateUser = () => {
+      const type = localStorage.getItem('userType');
+      const photo = localStorage.getItem('profilePhoto');
+      setUserType(type);
+      setProfilePhoto(photo);
+    };
+
+    updateUser();
+    window.addEventListener('storage', updateUser);
+    window.addEventListener('userTypeChanged', updateUser);
+    return () => {
+      window.removeEventListener('storage', updateUser);
+      window.removeEventListener('userTypeChanged', updateUser);
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
@@ -24,57 +41,109 @@ export default function Sidebar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
- useEffect(() => {
-  if (isDesktop) {
-    const updateIsOpen = () => setIsOpen((prevIsOpen: boolean) => !prevIsOpen);
-    if (!isOpen) {
-      updateIsOpen();
-    }
-  }
-}, [isDesktop]);
+  const handleLogout = () => {
+    localStorage.clear();
+    window.dispatchEvent(new Event('userTypeChanged'));
+    window.location.href = '/';
+  };
+
+  const navItems =
+    userType === 'student'
+      ? [
+          { name: 'Home', href: '/home', icon: Home },
+          { name: 'Dashboard', href: '/dashboard/student', icon: LayoutDashboard },
+          { name: 'Clubs', href: '/clubs', icon: Users },
+          { name: 'Events', href: '/event', icon: Calendar },
+          { name: 'Posts', href: '/post', icon: FileText },
+        ]
+      : userType === 'club'
+      ? [
+          { name: 'Home', href: '/home', icon: Home },
+          { name: 'Dashboard', href: '/dashboard/club', icon: LayoutDashboard },
+          { name: 'Clubs', href: '/clubs', icon: Users },
+          { name: 'Events', href: '/event', icon: Calendar },
+          { name: 'Posts', href: '/post', icon: FileText },
+        ]
+      : [
+          { name: 'Home', href: '/', icon: Home },
+          { name: 'Clubs', href: '/clubs', icon: Users },
+          { name: 'Events', href: '/event', icon: Calendar },
+          { name: 'Posts', href: '/post', icon: FileText },
+        ];
+
+  const LogoIcon = userType === 'club' ? Building2 : userType === 'student' ? User2 : Globe;
+
   return (
     <>
       <button
         className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? <X className="w-6 h-6 text-blue-600" /> : <Menu className="w-6 h-6 text-blue-600" />}
+        {isOpen ? <X className="w-6 h-6 text-[#2563EB]" /> : <Menu className="w-6 h-6 text-[#2563EB]" />}
       </button>
 
       <aside
-        className={`
-          fixed top-0 left-0 h-screen bg-white shadow-lg z-40
-          flex flex-col p-4 transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-screen bg-white shadow-lg z-40 flex flex-col p-4 transition-all duration-300 ease-in-out
           ${isDesktop ? (isCollapsed ? 'w-20' : 'w-64') : 'w-64'}
-          transform ${!isDesktop && !isOpen ? '-translate-x-full' : 'translate-x-0'}
-        `}
+          transform ${!isDesktop && !isOpen ? '-translate-x-full' : 'translate-x-0'}`}
       >
-        {isDesktop && (
+        <div className="flex flex-col items-center mb-6">
+          {profilePhoto && profilePhoto.startsWith('data:image') ? (
+            <img
+              src={profilePhoto}
+              alt="Profile"
+              className="w-14 h-14 rounded-full object-cover mb-3 border shadow-sm"
+            />
+          ) : (
+            <div className="w-14 h-14 bg-gradient-to-br from-[#2563EB] to-[#00BF63] rounded-2xl flex items-center justify-center mb-3 shadow-md">
+              <LogoIcon className="w-7 h-7 text-white" />
+            </div>
+          )}
+
+          {!isCollapsed && (
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#2563EB] to-[#00BF63] bg-clip-text text-transparent">
+              {userType === 'club'
+                ? 'Club Panel'
+                : userType === 'student'
+                ? 'Student Panel'
+                : 'Visitor'}
+            </h2>
+          )}
+        </div>
+
+        <nav className="flex flex-col gap-2 mt-4 flex-grow">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all font-medium ${
+                  active
+                    ? 'bg-gradient-to-r from-[#2563EB] to-[#00BF63] text-white shadow-md'
+                    : 'text-[#000000] hover:bg-[#FFCC00]/20 hover:text-[#2563EB]'
+                } ${isCollapsed ? 'justify-center' : ''}`}
+                onClick={() => !isDesktop && setIsOpen(false)}
+              >
+                <Icon className="w-5 h-5" />
+                {!isCollapsed && <span>{item.name}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {(userType === 'student' || userType === 'club') && (
           <button
-            className="self-end mb-4 p-1 rounded-full bg-gray-100 hover:bg-gray-200"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={handleLogout}
+            className={`mt-auto flex items-center gap-3 p-3 rounded-lg text-[#FF0000] hover:bg-[#FF0000]/10 transition ${
+              isCollapsed ? 'justify-center' : ''
+            }`}
           >
-            {isCollapsed ? <ChevronRight className="w-5 h-5 text-blue-600" /> : <ChevronLeft className="w-5 h-5 text-blue-600" />}
+            <LogOut className="w-5 h-5" />
+            {!isCollapsed && <span>Logout</span>}
           </button>
         )}
-
-        <h2 className={`text-2xl font-bold mb-8 ${isCollapsed ? 'hidden' : 'block'}`}>Club Hub</h2>
-
-        <nav className="flex flex-col gap-4 mt-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 hover:shadow-md transition-all font-medium ${
-                isCollapsed ? 'justify-center' : ''
-              }`}
-              onClick={() => !isDesktop && setIsOpen(false)}
-            >
-              <item.icon className="w-5 h-5 text-blue-600" />
-              {!isCollapsed && <span>{item.name}</span>}
-            </Link>
-          ))}
-        </nav>
       </aside>
 
       {isOpen && !isDesktop && (

@@ -12,3 +12,4 @@ declare module '@/components/ui/card'
 declare module '@/components/ui/select'
 declare module '@/components/ui/textarea'
 declare module '@/components/ui/tabs'
+

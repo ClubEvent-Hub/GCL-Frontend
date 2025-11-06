@@ -8,10 +8,120 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/api';
-import { getUser, isAuthenticated } from '../../../lib/auth';
-import { Club, Event, Post } from '../../types';
+import { getUser } from '@/lib/auth';
+import { Club, Event, Post } from '@/app/types';
 import { ArrowLeft, Edit, Trash2, Users, Calendar, FileText, Mail, MapPin } from 'lucide-react';
-import { unique } from 'next/dist/build/utils';
+
+const mockClubsData: Club[] = [
+  {
+    id: "c2",
+    clubName: "Science Club",
+    clubDescription: "Hands-on experiments and fun science activities.",
+    clubLocation: "Lab 3, Science Building",
+    clubType: "Educational",
+    clubStartDate: "2025-11-07T14:00:00",
+    clubEndDate: "2025-11-07T16:00:00",
+    clubImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+    university: "Sample University"
+  },
+  {
+    id: "c3",
+    clubName: "Art Club",
+    clubDescription: "Creative art sessions with painting, drawing, and exhibitions.",
+    clubLocation: "Art Room, Creative Center",
+    clubType: "Creative",
+    clubStartDate: "2025-11-09T16:00:00",
+    clubEndDate: "2025-11-09T18:00:00",
+    clubImage: "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=800&q=80",
+    university: "Sample University"
+  },
+  {
+    id: "c4",
+    clubName: "Music Club",
+    clubDescription:
+      "Join our band nights and jam sessions every weekend!",
+    clubLocation: "Music Hall, Arts Building",
+    clubType: "Social",
+    clubStartDate: "2025-11-10T18:00:00",
+    clubEndDate: "2025-11-10T20:00:00",
+    university: "Sample University"
+,
+    clubImage:
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "c5",
+    clubName: "Coding Club",
+    university: "Sample University"
+,
+    clubDescription:
+      "Weekly coding sessions, hackathons, and tech talks.",
+    clubLocation: "Room 204, Innovation Hub",
+    clubType: "Educational",
+    clubStartDate: "2025-11-12T13:00:00",
+    clubEndDate: "2025-11-12T15:00:00",
+    clubImage:
+      "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "c6",
+    clubName: "Photography Club",
+    university: "Sample University"
+,
+    clubDescription:
+      "Capture stunning visuals and improve your photo skills.",
+    clubLocation: "Studio 1, Arts Center",
+    clubType: "Creative",
+    clubStartDate: "2025-11-14T15:00:00",
+    clubEndDate: "2025-11-14T17:00:00",
+    clubImage:
+      "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=800&q=80",
+  },
+ 
+  {
+    id: "c8",
+    clubName: "Drama Club",
+    university: "Sample University"
+,
+    clubDescription:
+      "Perform, direct, and act in stage plays and skits.",
+    clubLocation: "Auditorium Stage",
+    clubType: "Creative",
+    clubStartDate: "2025-11-17T18:00:00",
+    clubEndDate: "2025-11-17T20:30:00",
+    clubImage:
+      "https://images.unsplash.com/photo-1529101091764-c3526daf38fe?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "c9",
+    clubName: "Gaming Club",
+    university: "Sample University"
+,
+    clubDescription:
+      "Friendly gaming tournaments and strategy sessions.",
+    clubLocation: "Recreation Hall, Floor 1",
+    clubType: "Social",
+    clubStartDate: "2025-11-19T17:00:00",
+    clubEndDate: "2025-11-19T19:00:00",
+    clubImage:
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "c10",
+    clubName: "Business Club",
+    university: "Sample University"
+,
+    clubDescription:
+      "Entrepreneurship meetups, networking, and innovation workshops.",
+    clubLocation: "Business Hall, Room 12",
+    clubType: "Educational",
+    clubStartDate: "2025-11-20T11:00:00",
+    clubEndDate: "2025-11-20T13:00:00",
+    clubImage:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80",
+  },
+
+];
 
 export default function ClubDetailPage() {
   const router = useRouter();
@@ -25,69 +135,45 @@ export default function ClubDetailPage() {
   const [error, setError] = useState('');
   const user = getUser();
 
- // useEffect(() => {if (!isAuthenticated()) {router.push('/login');   return; } loadClubDetails();}, [clubId]);
-useEffect(() => {
-  setClub({
-    id: "1",
-    clubName: "Chess Club",
-    clubType: "Student Club",
-    university: "My University",
-    clubEmail: "chess@university.edu",
-    clubDescription: "A club for chess enthusiasts.",
-  });
+  useEffect(() => {
+    const foundClub = mockClubsData.find(c => c.id === clubId);
 
-  setEvents([
-    {
-      id: "2",
-      eventName: "Chess Tournament",
-      eventDescription: "Annual chess tournament.",
-      eventStartDate: new Date().toISOString(),
-      eventLocation: "Auditorium",
-      eventType: "Tournament",
-    },
-  ]);
+  setTimeout(() => {
+    setClub(foundClub || null);
 
-  setPosts([
-    {
-      id: "3",
-      title: "Welcome Post",
-      description: "Welcome to our club!",
-      numberOfLikes: 10,
-      numberOfComments: 2,
-      postType: "Announcement",
-    },
-  ]);
+      setEvents([
+      {
+        id: "2",
+        eventName: "Chess Tournament",
+        eventDescription: "Annual chess tournament.",
+        eventStartDate: new Date().toISOString(),
+        eventLocation: "Auditorium",
+        eventType: "Tournament",
+      },
+    ]);
 
-  setLoading(false);
-}, []);
+    setPosts([
+      {
+        id: "3",
+        title: "Welcome Post",
+        description: "Welcome to our club!",
+        numberOfLikes: 10,
+        numberOfComments: 2,
+        postType: "Announcement",
+      },
+    ]);
 
-  const loadClubDetails = async () => {
-    try {
-      setLoading(true);
-      const [clubData, eventsData, postsData] = await Promise.all([
-        api.getClub(clubId),
-        api.getEvents(),
-        api.getPosts(),
-      ]);
-
-      setClub(clubData);
-      setEvents(eventsData);
-      setPosts(postsData);
-    } catch (err: unknown | Error) {
-      setError(err instanceof Error ? err.message || 'Failed to load club details. Please try again.' : 'Failed to load club details. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(false);
+  }, 0);
+  }, [clubId]);
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this club?')) return;
-
     try {
       await api.deleteClub(clubId);
       router.push('/clubs');
-    } catch (err:  unknown |Error) {    
-      setError(err instanceof Error ? err.message || 'Failed to delete . Please try again.' : 'Failed to delete . Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete');
     }
   };
 
@@ -120,7 +206,6 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/clubs">
             <Button variant="outline" size="icon">
@@ -134,9 +219,14 @@ useEffect(() => {
           </Alert>
         )}
 
-        {/* Club Header Card */}
         <Card className="mb-8 shadow-2xl border-0 overflow-hidden">
-          <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+          <div>
+            <img
+              src={club.clubImage}
+              alt={club.clubName}
+              className="w-full h-48 object-cover"
+            />
+          </div>
           <CardContent className="pt-6">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-6">
@@ -148,33 +238,25 @@ useEffect(() => {
                   <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                     <span className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
-                      {club.clubType}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
                       {club.university}
                     </span>
                     <span className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {club.clubType}
+                    </span>
+                    <span className="flex items-center gap-1">
                       <Mail className="w-4 h-4" />
-                      {club.clubEmail}
+                      {club.clubEmail || 'contact@club.edu'}
                     </span>
                   </div>
                   <p className="text-gray-700 max-w-3xl">{club.clubDescription}</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon">
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={handleDelete}>
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </Button>
-              </div>
+              
             </div>
           </CardContent>
         </Card>
 
-        {/* Tabs Section */}
         <Tabs defaultValue="about" className="space-y-6">
           <TabsList className="bg-white shadow-md">
             <TabsTrigger value="about">About</TabsTrigger>
@@ -183,7 +265,6 @@ useEffect(() => {
             <TabsTrigger value="members">Members</TabsTrigger>
           </TabsList>
 
-          {/* About Tab */}
           <TabsContent value="about">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-2 shadow-lg">
@@ -230,7 +311,6 @@ useEffect(() => {
             </div>
           </TabsContent>
 
-          {/* Events Tab */}
           <TabsContent value="events">
             <Card className="shadow-lg">
               <CardHeader>
@@ -286,7 +366,6 @@ useEffect(() => {
             </Card>
           </TabsContent>
 
-          {/* Posts Tab */}
           <TabsContent value="posts">
             <Card className="shadow-lg">
               <CardHeader>
@@ -304,7 +383,7 @@ useEffect(() => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {posts.length > 0 ? (
-                  posts.map((post:Post) => (
+                  posts.map((post: Post) => (
                     <div key={post.id} className="p-4 border rounded-lg hover:border-pink-300 transition-colors">
                       <h4 className="font-semibold text-gray-900 mb-2">{post.title}</h4>
                       <p className="text-sm text-gray-600 mb-3 line-clamp-3">{post.description}</p>
@@ -330,7 +409,6 @@ useEffect(() => {
             </Card>
           </TabsContent>
 
-          {/* Members Tab */}
           <TabsContent value="members">
             <Card className="shadow-lg">
               <CardHeader>

@@ -3,17 +3,27 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { api } from '@/lib/api';
-import { Club } from '../../../types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Alert } from '@/components/ui/Alert';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-
+import Image from 'next/image';
 export default function CreateClubPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -24,9 +34,29 @@ export default function CreateClubPage() {
     clubType: '',
     clubDescription: '',
     university: '',
-});
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev: typeof formData) => ({ ...prev, clubLogo: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,31 +64,21 @@ export default function CreateClubPage() {
     setLoading(true);
 
     try {
-      await api.createClub(formData);
-      router.push('/clubs');
-    } catch (err: unknown | Error) {
-      setError(err instanceof Error ? err.message || 'Failed to create club. Please try again.' : 'Failed to create club. Please try again.');
+      await new Promise((res) => setTimeout(res, 1000)); // simulate API
+      localStorage.setItem('userType', 'club');
+      localStorage.setItem('clubData', JSON.stringify(formData));
+      localStorage.setItem('profilePhoto', formData.clubLogo);
+      window.dispatchEvent(new Event('storage')); // force Sidebar update
+      router.push('/club/dashboard');
+    } catch {
+      setError('Failed to create club. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-const handleSelectChange = (name: string, value: string) => {
-  setFormData({
-    ...formData,
-    [name]: value,
-  });
-};
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-transparent py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/">
@@ -67,7 +87,9 @@ const handleSelectChange = (name: string, value: string) => {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create New Club</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create New Club
+            </h1>
             <p className="text-gray-600">Start your student organization</p>
           </div>
         </div>
@@ -75,21 +97,17 @@ const handleSelectChange = (name: string, value: string) => {
         <Card className="shadow-2xl border-0">
           <CardHeader>
             <CardTitle>Club Information</CardTitle>
-            <CardDescription>Fill in the details about your club</CardDescription>
+            <CardDescription>Fill in your club’s details</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                </Alert>
-              )}
+              {error && <Alert variant="destructive">{error}</Alert>}
 
               <div className="space-y-2">
                 <Label htmlFor="clubName">Club Name *</Label>
                 <Input
                   id="clubName"
                   name="clubName"
-                  placeholder="Tech Innovation Club"
                   value={formData.clubName}
                   onChange={handleChange}
                   required
@@ -103,24 +121,20 @@ const handleSelectChange = (name: string, value: string) => {
                     id="clubEmail"
                     name="clubEmail"
                     type="email"
-                    placeholder="club@university.edu"
                     value={formData.clubEmail}
                     onChange={handleChange}
                     required
                   />
                 </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="clubPassword">Club Password *</Label>
                   <Input
                     id="clubPassword"
                     name="clubPassword"
                     type="password"
-                    placeholder="••••••••"
                     value={formData.clubPassword}
                     onChange={handleChange}
                     required
-                    minLength={6}
                   />
                 </div>
               </div>
@@ -130,7 +144,7 @@ const handleSelectChange = (name: string, value: string) => {
                   <Label htmlFor="clubType">Club Type *</Label>
                   <Select
                     value={formData.clubType}
-                    onValueChange={(value: string) => handleSelectChange('clubType', value)}
+                    onValueChange={(v: string) => handleSelectChange('clubType', v)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
@@ -138,21 +152,16 @@ const handleSelectChange = (name: string, value: string) => {
                     <SelectContent>
                       <SelectItem value="Academic">Academic</SelectItem>
                       <SelectItem value="Sports">Sports</SelectItem>
-                      <SelectItem value="Arts">Arts</SelectItem>
                       <SelectItem value="Technology">Technology</SelectItem>
-                      <SelectItem value="Community Service">Community Service</SelectItem>
                       <SelectItem value="Cultural">Cultural</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="university">University *</Label>
                   <Input
                     id="university"
                     name="university"
-                    placeholder="University Name"
                     value={formData.university}
                     onChange={handleChange}
                     required
@@ -161,15 +170,25 @@ const handleSelectChange = (name: string, value: string) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="clubLogo">Club Logo URL (Optional)</Label>
-                <Input
-                  id="clubLogo"
-                  name="clubLogo"
-                  type="url"
-                  placeholder="https://example.com/logo.png"
-                  value={formData.clubLogo}
-                  onChange={handleChange}
-                />
+                <Label>Club Logo</Label>
+                <div className="flex flex-col items-center">
+                  {formData.clubLogo ? (
+                    <Image
+      src={formData.clubLogo}
+      alt="Club Logo Preview"
+      className="w-24 h-24 rounded-full object-cover mb-2 border"
+      width={240} 
+      height={240}
+      quality={90} 
+      priority 
+    />
+  ) : (
+                    <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-2">
+                      <span className="text-gray-500 text-sm">No Logo</span>
+                    </div>
+                  )}
+                  <Input type="file" accept="image/*" onChange={handleImageUpload} />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -177,40 +196,30 @@ const handleSelectChange = (name: string, value: string) => {
                 <Textarea
                   id="clubDescription"
                   name="clubDescription"
-                  placeholder="Tell us about your club, its mission, and activities..."
                   value={formData.clubDescription}
                   onChange={handleChange}
+                  rows={5}
                   required
-                  rows={6}
-                  className="resize-none"
                 />
               </div>
 
-              <div className="flex gap-4">
-                <Button
-                  type="submit"
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    'Create Club'
-                  )}
-                </Button>
-                <Link href="/" className="flex-1">
-                  <Button type="button" variant="outline" className="w-full">
-                    Cancel
-                  </Button>
-                </Link>
-              </div>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...
+                  </>
+                ) : (
+                  'Create Club'
+                )}
+              </Button>
             </form>
           </CardContent>
         </Card>
       </div>
     </div>
   );
-}
+}  

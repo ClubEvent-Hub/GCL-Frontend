@@ -97,7 +97,7 @@ export default function CreatePostPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-pink-50 to-red-50 py-8">
+    <div className="min-h-screen bg-transparent from-gray-50 via-pink-50 to-red-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/post">

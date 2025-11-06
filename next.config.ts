@@ -1,11 +1,19 @@
+import type { NextConfig } from 'next';
 
 const nextConfig = {
   devIndicators: {
-    buildActivity: false, 
+    buildActivity: false,
   },
   images: {
-    domains: ["localhost"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com', 
+      },
+    ],
+    domains: ['localhost', 'images.unsplash.com'],
   },
+  turbopack: {}, 
 };
 
 export default nextConfig;

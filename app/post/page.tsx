@@ -28,7 +28,7 @@ export default function PostsPage() {
       try {
         setLoading(true);
         const data = await api.getPosts();
-        const examplePosts: Post[] = [
+        const examplePosts= [
           {
             id: 'example-1',
             title: 'Welcome to the Community!',
@@ -54,7 +54,7 @@ export default function PostsPage() {
         setFilteredPosts(combinedPosts);
       } catch (err: unknown | Error) {
         setError(err instanceof Error ? err.message || 'Failed to load posts.' : 'Failed to load posts.');
-        const examplePosts: Post[] = [
+        const examplePosts= [
           {
             id: 'example-1',
             title: 'Welcome to the Community!',
@@ -123,7 +123,7 @@ export default function PostsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-pink-50 to-red-50">
+    <div className="min-h-screen bg-transparent from-gray-50 via-pink-50 to-red-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">

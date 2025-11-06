@@ -118,3 +118,64 @@
         @apply bg-background text-foreground;
     }
 }
+
+@keyframes slide-down {
+    0% {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-down {
+    animation: slide-down 0.2s ease-out;
+}
+
+
+/* globals.css */
+
+body.home-background {
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(50px);
+    overflow: hidden;
+}
+
+body.home-background::before,
+body.home-background::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(32px);
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+}
+
+body.home-background::before {
+    width: 24rem;
+    height: 24rem;
+    top: 200px;
+    left: 200px;
+    background: #ec0003;
+}
+
+body.home-background::after {
+    width: 24rem;
+    height: 24rem;
+    top: 400px;
+    right: 200px;
+    background: #49e374;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

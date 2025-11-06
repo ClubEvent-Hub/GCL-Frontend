@@ -166,4 +166,4 @@ async register(data: Student) {
   }
 }
 
-export const api = new ApiClient(API_BASE_URL);
+export const api = new ApiClient(API_BASE_URL);   

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import { CardDescription } from '@/components/ui/card';
 export interface Student {
   id?: string;
   firstName: string;
@@ -13,13 +15,17 @@ export interface Student {
 export type Club = {
   id?: string;
   clubName: string;
-  clubEmail: string;
+  clubEmail?: string;
   clubPassword?: string;
   clubLogo?: string;
   clubType: string;
   clubDescription: string;
   university: string;
   membersCount?: number;
+  clubLocation: string;
+  clubStartDate: string;
+  clubEndDate: string;
+   clubImage?: string
 };
 
 export interface Event {
@@ -31,6 +37,21 @@ export interface Event {
   eventLocation: string;
   eventDescription: string;
   clubId?: string;
+  classname?: string;
+  date: string;
+  name?: string
+  color?: string
+  avatar?: string
+  role?: string
+  key: string
+  shiftKey: string
+  clubName: string
+  preventDefault: () => void
+  toLowerCase(): string
+  title: string
+  image: string
+  description: string
+  
 }
 
 export interface Post {
@@ -43,4 +64,11 @@ export interface Post {
   numberOfComments: number;
   studentId?: string;
   eventId?: string;
+  name?: string;
+  date?: string;
+  comments?: string;
+  likes?: boolean
+  views?: boolean
+  ClassName?: string
+
 }
