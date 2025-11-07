@@ -166,7 +166,7 @@ export default function ClubDashboard() {
                   Exploring technology, innovation, and software development through hands-on projects and events.
                 </p>
                 <div className="flex gap-6">
-                  <Link href="/clubs/create">
+                  <Link href="/event/create">
                     <Button className="bg-cyan-600 hover:bg-cyan-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Create Event

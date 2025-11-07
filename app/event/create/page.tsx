@@ -10,9 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { api } from '@/lib/api';
-import { Event } from '../../types';
-import { ArrowLeft, Loader2, Calendar, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, Calendar, AlertCircle, ImageIcon } from 'lucide-react';
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -23,7 +21,9 @@ export default function CreateEventPage() {
     eventType: '',
     eventLocation: '',
     eventDescription: '',
+    eventImage: '',
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
@@ -31,89 +31,66 @@ export default function CreateEventPage() {
   const validateForm = () => {
     const errors: Record<string, string> = {};
 
-    if (!formData.eventName.trim()) {
-      errors.eventName = 'Event name is required';
-    } else if (formData.eventName.length < 3) {
-      errors.eventName = 'Event name must be at least 3 characters';
-    }
-
-    if (!formData.eventStartDate) {
-      errors.eventStartDate = 'Start date is required';
-    }
-
-    if (!formData.eventEndDate) {
-      errors.eventEndDate = 'End date is required';
-    }
-
-    if (formData.eventStartDate && formData.eventEndDate) {
-      const start = new Date(formData.eventStartDate);
-      const end = new Date(formData.eventEndDate);
-      const now = new Date();
-
-      if (start < now) {
-        errors.eventStartDate = 'Start date cannot be in the past';
-      }
-
-      if (end <= start) {
-        errors.eventEndDate = 'End date must be after start date';
-      }
-    }
-
-    if (!formData.eventType) {
-      errors.eventType = 'Event type is required';
-    }
-
-    if (!formData.eventLocation.trim()) {
-      errors.eventLocation = 'Location is required';
-    }
-
-    if (!formData.eventDescription.trim()) {
-      errors.eventDescription = 'Description is required';
-    } else if (formData.eventDescription.length < 20) {
-      errors.eventDescription = 'Description must be at least 20 characters';
-    }
+    if (!formData.eventName.trim()) errors.eventName = 'Event name is required';
+    if (!formData.eventStartDate) errors.eventStartDate = 'Start date is required';
+    if (!formData.eventEndDate) errors.eventEndDate = 'End date is required';
+    if (!formData.eventType) errors.eventType = 'Event type is required';
+    if (!formData.eventLocation.trim()) errors.eventLocation = 'Location is required';
+    if (!formData.eventDescription.trim()) errors.eventDescription = 'Description is required';
+    if (!formData.eventImage.trim()) errors.eventImage = 'Event image URL is required';
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (validationErrors[name]) setValidationErrors({ ...validationErrors, [name]: '' });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({ ...formData, [name]: value });
+    if (validationErrors[name]) setValidationErrors({ ...validationErrors, [name]: '' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (!validateForm()) {
-      setError('Please fix the validation errors below');
+      setError('Please fix the validation errors below.');
       return;
     }
 
     setLoading(true);
     try {
-      await api.createEvent(formData);
-      router.push('/events');
+      const response = await fetch('https://sys-multi-agents.onrender.com/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.eventName,
+          description: formData.eventDescription,
+          date: formData.eventStartDate,
+          endDate: formData.eventEndDate,
+          image: formData.eventImage,
+          location: formData.eventLocation,
+          type: formData.eventType,
+          clubName: 'AI Club', 
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to create event.');
+
+      router.push('/event'); 
     } catch (err: unknown | Error) {
-      setError(err instanceof Error ? err.message || 'Failed to create event. Please try again.' : 'Failed to create event. Please try again.');
+      setError(err instanceof Error ? err.message || 'Error creating event.:' : 'Error creating event.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (validationErrors[name]) {
-      setValidationErrors({ ...validationErrors, [name]: '' });
-    }
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
-    if (validationErrors[name]) {
-      setValidationErrors({ ...validationErrors, [name]: '' });
-    }
-  };
-
   return (
-    <div className="min-h-screen  bg-filter from-gray-50 via-purple-50 to-pink-50 py-8">
+    <div className="min-h-screen bg-filter from-purple-50 via-pink-50 to-blue-50 py-10">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/event">
@@ -122,36 +99,37 @@ export default function CreateEventPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
-            <p className="text-gray-600">Organize an exciting event for your community</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Create New Event
+            </h1>
+            <p className="text-gray-600">Organize something exciting for your community</p>
           </div>
         </div>
 
-        <Card className="shadow-2xl border-0">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+        <Card className="shadow-xl border-0 backdrop-blur-md bg-white/90">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl">
-              <Calendar className="w-6 h-6" />
+              <Calendar className="w-6 h-6 text-purple-600" />
               Event Details
             </CardTitle>
-            <CardDescription>Fill in the information about your event</CardDescription>
+            <CardDescription>Fill in the event information below</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <Alert variant="destructive" className="shadow-md">
-                </Alert>
-              )}
+          <CardContent className="pt-4">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+              </Alert>
+            )}
 
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="eventName">Event Name *</Label>
                 <Input
                   id="eventName"
                   name="eventName"
-                  placeholder="Annual Tech Conference 2025"
                   value={formData.eventName}
                   onChange={handleChange}
-                  required
-                  className={`text-lg ${validationErrors.eventName ? 'border-red-500' : ''}`}
+                  placeholder="AI Innovation Summit 2025"
+                  className={validationErrors.eventName ? 'border-red-500' : ''}
                 />
                 {validationErrors.eventName && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
@@ -161,177 +139,106 @@ export default function CreateEventPage() {
                 )}
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="eventImage">Event Image URL *</Label>
+                <Input
+                  id="eventImage"
+                  name="eventImage"
+                  value={formData.eventImage}
+                  onChange={handleChange}
+                  placeholder="https://images.unsplash.com/photo-xxxxxx"
+                  className={validationErrors.eventImage ? 'border-red-500' : ''}
+                />
+                {validationErrors.eventImage && (
+                  <p className="text-sm text-red-600 flex items-center gap-1">
+                    <ImageIcon className="w-4 h-4" />
+                    {validationErrors.eventImage}
+                  </p>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="eventStartDate">Start Date & Time *</Label>
+                <div>
+                  <Label>Start Date & Time *</Label>
                   <Input
-                    id="eventStartDate"
-                    name="eventStartDate"
                     type="datetime-local"
+                    name="eventStartDate"
                     value={formData.eventStartDate}
                     onChange={handleChange}
-                    required
                     className={validationErrors.eventStartDate ? 'border-red-500' : ''}
                   />
-                  {validationErrors.eventStartDate && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {validationErrors.eventStartDate}
-                    </p>
-                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="eventEndDate">End Date & Time *</Label>
+                <div>
+                  <Label>End Date & Time *</Label>
                   <Input
-                    id="eventEndDate"
-                    name="eventEndDate"
                     type="datetime-local"
+                    name="eventEndDate"
                     value={formData.eventEndDate}
                     onChange={handleChange}
-                    required
                     className={validationErrors.eventEndDate ? 'border-red-500' : ''}
                   />
-                  {validationErrors.eventEndDate && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {validationErrors.eventEndDate}
-                    </p>
-                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="eventType">Event Type *</Label>
+                <div>
+                  <Label>Event Type *</Label>
                   <Select
                     value={formData.eventType}
                     onValueChange={(value: string) => handleSelectChange('eventType', value)}
                   >
-                    <SelectTrigger className={validationErrors.eventType ? 'border-red-500' : ''}>
+                    <SelectTrigger>
                       <SelectValue placeholder="Select event type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Workshop">🛠️ Workshop</SelectItem>
-                      <SelectItem value="Conference">🎤 Conference</SelectItem>
-                      <SelectItem value="Seminar">📚 Seminar</SelectItem>
-                      <SelectItem value="Competition">🏆 Competition</SelectItem>
-                      <SelectItem value="Social">🎉 Social Gathering</SelectItem>
-                      <SelectItem value="Sports">⚽ Sports Event</SelectItem>
-                      <SelectItem value="Cultural">🎭 Cultural Event</SelectItem>
-                      <SelectItem value="Career Fair">💼 Career Fair</SelectItem>
-                      <SelectItem value="Fundraiser">💰 Fundraiser</SelectItem>
-                      <SelectItem value="Other">📋 Other</SelectItem>
+                      <SelectItem value="Workshop">Workshop</SelectItem>
+                      <SelectItem value="Talk">Talk</SelectItem>
+                      <SelectItem value="Hackathon">Hackathon</SelectItem>
+                      <SelectItem value="Competition">Competition</SelectItem>
+                      <SelectItem value="Festival">Festival</SelectItem>
                     </SelectContent>
                   </Select>
-                  {validationErrors.eventType && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {validationErrors.eventType}
-                    </p>
-                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="eventLocation">Location *</Label>
+                <div>
+                  <Label>Location *</Label>
                   <Input
-                    id="eventLocation"
                     name="eventLocation"
-                    placeholder="Main Auditorium, Building A"
                     value={formData.eventLocation}
                     onChange={handleChange}
-                    required
+                    placeholder="Tech Auditorium, Block B"
                     className={validationErrors.eventLocation ? 'border-red-500' : ''}
                   />
-                  {validationErrors.eventLocation && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {validationErrors.eventLocation}
-                    </p>
-                  )}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="eventDescription">Event Description *</Label>
+              <div>
+                <Label>Event Description *</Label>
                 <Textarea
-                  id="eventDescription"
                   name="eventDescription"
-                  placeholder="Describe your event in detail: what participants can expect, agenda, speakers, requirements, etc."
                   value={formData.eventDescription}
                   onChange={handleChange}
-                  required
-                  rows={8}
-                  className={`resize-none ${validationErrors.eventDescription ? 'border-red-500' : ''}`}
+                  rows={5}
+                  placeholder="Describe your event..."
+                  className={validationErrors.eventDescription ? 'border-red-500' : ''}
                 />
-                {validationErrors.eventDescription && (
-                  <p className="text-sm text-red-600 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" />
-                    {validationErrors.eventDescription}
-                  </p>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-lg shadow-md hover:shadow-lg"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Creating Event...
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-5 h-5 mr-2" /> Create Event
+                  </>
                 )}
-                <p className="text-xs text-gray-500">
-                  Be descriptive! Include agenda, speakers, requirements, and what makes this event special.
-                </p>
-              </div>
-
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-5">
-                <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Event Preview
-                </h4>
-                <div className="text-sm text-blue-800 space-y-2">
-                  <p><strong>Name:</strong> {formData.eventName || 'Not set'}</p>
-                  <p><strong>Type:</strong> {formData.eventType || 'Not set'}</p>
-                  <p><strong>Location:</strong> {formData.eventLocation || 'Not set'}</p>
-                  {formData.eventStartDate && (
-                    <p><strong>Start:</strong> {new Date(formData.eventStartDate).toLocaleString()}</p>
-                  )}
-                  {formData.eventEndDate && (
-                    <p><strong>End:</strong> {new Date(formData.eventEndDate).toLocaleString()}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button
-                  type="submit"
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Creating Event...
-                    </>
-                  ) : (
-                    <>
-                      <Calendar className="mr-2 h-5 w-5" />
-                      Create Event
-                    </>
-                  )}
-                </Button>
-                <Link href="/events" className="flex-1">
-                  <Button type="button" variant="outline" className="w-full h-12 text-lg font-semibold">
-                    Cancel
-                  </Button>
-                </Link>
-              </div>
+              </Button>
             </form>
-          </CardContent>
-        </Card>
-
-        <Card className="mt-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 shadow-lg">
-          <CardContent className="pt-6">
-            <h3 className="font-bold text-purple-900 mb-3 flex items-center gap-2 text-lg">
-              💡 Tips for a Great Event
-            </h3>
-            <ul className="text-sm text-purple-800 space-y-2 list-disc list-inside">
-              <li>Choose a clear, descriptive event name that attracts attendees</li>
-              <li>Provide detailed information about the agenda and speakers</li>
-              <li>Specify any prerequisites, materials needed, or dress code</li>
-              <li>Include registration or RSVP information if applicable</li>
-              <li>Mention parking, accessibility, or other logistical details</li>
-              <li>Add contact information for questions</li>
-            </ul>
           </CardContent>
         </Card>
       </div>

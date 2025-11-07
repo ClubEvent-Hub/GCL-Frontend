@@ -6,18 +6,10 @@ import { Users, Calendar, FileText, ArrowRight, CheckCircle, TrendingUp, Shield,
 
 export default function Home() {
   return (
-  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="absolute inset-0">
-        <div className="w-96 h-96 left-[251px] top-[374px] absolute opacity-20 mix-blend-multiply bg-[#EC0003] rounded-full blur-[32px]" />
-        <div className="w-96 h-96 left-[915px] top-[575px] absolute opacity-20 mix-blend-multiply bg-[#EC0003] rounded-full blur-[32px]" />
-        <div className="w-96 h-96 left-[48px] top-[575px] absolute opacity-20 mix-blend-multiply bg-[#49E374] rounded-full blur-[32px]" />
-        <div className="w-96 h-96 left-[771px] top-[16px] absolute opacity-20 mix-blend-multiply bg-[#49E374] rounded-full blur-[32px]" />
-        <div className="w-96 h-96 left-[48px] top-0 absolute opacity-10 mix-blend-multiply bg-[#0609D4] rounded-full blur-[32px]" />
-        <div className="w-96 h-96 left-[1054px] top-[174px] absolute opacity-10 mix-blend-multiply bg-[#FACC15] rounded-full blur-[32px]" />
-      </div>
-
+  <div className="min-h-screen bg-filter  from-blue-50 via-indigo-50 to-purple-50">
      
-      <header className="flex items-center justify-between px-6 md:px-12 py-4 bg-white/70 backdrop-blur-md shadow sticky top-0 z-10">
+     
+      <header className="flex items-center justify-between px-6 md:px-12 py-4 bg-filter backdrop-blur-md shadow sticky top-0 z-10">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/Component.svg" alt="Logo" width={36} height={36} />
           <div className="flex items-center gap-1">
@@ -30,8 +22,8 @@ export default function Home() {
               <Link href="/auth/login">
                  <Button variant="ghost" className="hover:bg-blue-50 hover:text-blue-600 hover:shadow-md text-blue-600 ">Sign{' '} <div>In</div></Button>
               </Link>
-              <Link href="auth/register">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Link href="/auth/register">
+                <Button className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-600 hover:to-green-600">
                   Get Started
                 </Button>
               </Link>
@@ -43,12 +35,12 @@ export default function Home() {
           <div className="text-center">
             <div className="mb-8 flex justify-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                <Zap className="w-4 h-4" />
+                <Zap className="w-4 h-4"  />
                 Welcome to the Future of Campus Life
               </div>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r  from-red-600 to-green-600 hover:from-red-600 hover:to-green-600 bg-clip-text text-transparent">
                 Club Management
               </span>
               <br />
@@ -58,16 +50,17 @@ export default function Home() {
               Connect, organize, and grow your student community with our modern, all-in-one platform designed for universities
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <Link href="auth/register">
-                <Button size="lg" className="h-14 px-8 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all">
+              <Link href="/auth/register">
+                <Button size="lg" className="h-14 px-8 text-lg bg-gradient-to-r  from-red-600 to-green-600 hover:from-red-600 hover:to-green-600 shadow-xl hover:shadow-2xl transition-all">
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="auth/login">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg hover:bg-white shadow-lg">
-                  Sign In
-                </Button>
+              <Link href="/auth/login">
+               
+               <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2  hover:bg-white/10">
+                Sign In
+              </Button>
               </Link>
             </div>
             <p className="text-sm text-gray-500 mt-6">
@@ -120,9 +113,9 @@ export default function Home() {
           </Card>
 
           <Card className="shadow-2xl border-0 hover:shadow-3xl transition-all duration-300 group overflow-hidden">
-            <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+            <div className="h-2 bg-gradient-to-r from-green-500 to-green-600"></div>
             <CardContent className="pt-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Event Planning</h3>
@@ -131,15 +124,15 @@ export default function Home() {
               </p>
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-purple-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
                   Event scheduling
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-purple-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
                   RSVP management
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-purple-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
                   Automated reminders
                 </li>
               </ul>
@@ -147,9 +140,9 @@ export default function Home() {
           </Card>
 
           <Card className="shadow-2xl border-0 hover:shadow-3xl transition-all duration-300 group overflow-hidden">
-            <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+            <div className="h-2 bg-gradient-to-r from-red-500 to-red-600"></div>
             <CardContent className="pt-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <FileText className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Social Feed</h3>
@@ -158,15 +151,15 @@ export default function Home() {
               </p>
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-pink-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-red-600 mr-2" />
                   Real-time updates
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-pink-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-red-600 mr-2" />
                   Social interactions
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-pink-600 mr-2" />
+                  <CheckCircle className="w-4 h-4 text-red-600 mr-2" />
                   Content sharing
                 </li>
               </ul>
@@ -175,8 +168,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 py-20">
+      <div className="bg-gradient-to-r  from-red-600 to-green-600 hover:from-red-600 hover:to-green-600  py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <div>
@@ -199,7 +191,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Why Choose Us Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -253,8 +244,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-20">
+      <div className="bg-gradient-to-r  from-red-600 to-green-600 hover:from-red-600 hover:to-green-600 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Ready to transform your campus community?
@@ -263,27 +253,25 @@ export default function Home() {
             Join thousands of students already using our platform to connect and grow
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/register">
+            <Link href="/auth/register">
               <Button size="lg" variant="secondary" className="h-14 px-8 text-lg shadow-2xl hover:shadow-3xl transition-all font-bold">
                 Create Free Account
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-white text-white hover:bg-white/10">
+            <Link href="/auth/login">
+              <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2  hover:bg-white/10">
                 Sign In
               </Button>
             </Link>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-red-600 to-green-600 hover:from-red-600 hover:to-green-600 bg-clip-text text-transparent">
                 Club Management
               </h3>
               <p className="text-gray-400 text-sm">

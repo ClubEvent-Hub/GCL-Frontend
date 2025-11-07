@@ -149,7 +149,6 @@ export default function MembersManagementPage() {
   const [showMemberDialog, setShowMemberDialog] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
-  // Filter members
   const filteredMembers = members.filter((member: Member) => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -159,7 +158,6 @@ export default function MembersManagementPage() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  // Stats
   const stats = {
     total: members.length,
     active: members.filter((m: Member) => m.status === 'Active').length,
@@ -238,7 +236,6 @@ const buttonContent = (
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/dashboard/club">
             <Button variant="outline" size="icon">
@@ -257,7 +254,6 @@ const buttonContent = (
           </Button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
             <CardContent className="p-4">
@@ -285,7 +281,6 @@ const buttonContent = (
           </Card>
         </div>
 
-        {/* Filters & Search */}
         <Card className="mb-6 shadow-lg border-0">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-4">
@@ -327,8 +322,6 @@ const buttonContent = (
             </div>
           </CardContent>
         </Card>
-
-        {/* Members Table */}
         <Card className="shadow-xl border-0">
           <CardHeader>
             <CardTitle className="text-2xl">
@@ -476,7 +469,6 @@ const buttonContent = (
           </DialogContent>
         </Dialog>
 
-        {/* Add Member Dialog */}
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogContent>
             <DialogHeader>

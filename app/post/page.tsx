@@ -1,96 +1,131 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Alert } from '@/components/ui/Alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { api } from '@/lib/api';
-import { getUser, isAuthenticated } from '@/lib/auth';
-import { Post } from '../types';
-import { Heart, MessageCircle, Search, PlusCircle, ArrowLeft, Share2, TrendingUp, Filter } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Heart,
+  MessageCircle,
+  PlusCircle,
+  ArrowLeft,
+  TrendingUp,
+} from 'lucide-react';
+
+type Post = {
+  id: string;
+  title: string;
+  description: string;
+  postType: string;
+  numberOfLikes: number;
+  numberOfComments: number;
+  content: string;
+  image: string;
+};
 
 export default function PostsPage() {
-  const router = useRouter();
-  const user = getUser();
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        setLoading(true);
-        const data = await api.getPosts();
-        const examplePosts= [
-          {
-            id: 'example-1',
-            title: 'Welcome to the Community!',
-            description: 'This is an example post to get you started. Feel free to create your own posts.',
-            postType: 'Announcement',
-            numberOfLikes: 5,
-            numberOfComments: 2,
-            content: 'Join our weekly challenge to improve your skills and connect with others!',
-
-          },
-          {
-            id: 'example-2',
-            title: 'Weekly Challenge',
-            description: 'Join our weekly challenge to improve your skills and connect with others!',
-            postType: 'Discussion',
-            numberOfLikes: 8,
-            numberOfComments: 3,
-            content: 'Join our weekly challenge to improve your skills and connect with others!',
-          },
-        ];
-        const combinedPosts = [...examplePosts, ...data];
-        setPosts(combinedPosts);
-        setFilteredPosts(combinedPosts);
-      } catch (err: unknown | Error) {
-        setError(err instanceof Error ? err.message || 'Failed to load posts.' : 'Failed to load posts.');
-        const examplePosts= [
-          {
-            id: 'example-1',
-            title: 'Welcome to the Community!',
-            description: 'This is an example post to get you started. Feel free to create your own posts.',
-            postType: 'Announcement',
-            numberOfLikes: 5,
-            numberOfComments: 2,
-            content: 'Join our weekly challenge to improve your skills and connect with others!',
-
-          },
-          {
-            id: 'example-2',
-            title: 'Weekly Challenge',
-            description: 'Join our weekly challenge to improve your skills and connect with others!',
-            postType: 'Discussion',
-            numberOfLikes: 8,
-            numberOfComments: 3,
-            content: 'Join our weekly challenge to improve your skills and connect with others!',
-
-          },
-        ];
-        setPosts(examplePosts);
-        setFilteredPosts(examplePosts);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPosts();
+    const examplePosts: Post[] = [
+    
+      {
+        id: '2',
+        title: '💻 Coding Marathon 2025',
+        description: '48-hour hackathon for developers and innovators to build something amazing!',
+        postType: 'Event',
+        numberOfLikes: 33,
+        numberOfComments: 8,
+        content: 'Form a team, solve challenges, and win exciting prizes. Beginners welcome!',
+        image:
+          'https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        id: '3',
+        title: '🌐 Cybersecurity Awareness Day',
+        description: 'A full-day seminar about protecting your data and online privacy.',
+        postType: 'Seminar',
+        numberOfLikes: 26,
+        numberOfComments: 7,
+        content:
+          'Learn about phishing, password security, and ethical hacking from top experts.',
+        image:
+          'https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        id: '4',
+        title: '🤖 Robotics Club Project Launch',
+        description: 'Our robotics club unveils their latest autonomous delivery robot.',
+        postType: 'Announcement',
+        numberOfLikes: 21,
+        numberOfComments: 5,
+        content: 'See the robot in action and learn about the engineering behind it.',
+        image:
+          'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        id: '5',
+        title: '🧠 Tech Talk: The Future of Quantum Computing',
+        description: 'A special lecture from IBM researchers on quantum innovation.',
+        postType: 'Seminar',
+        numberOfLikes: 19,
+        numberOfComments: 3,
+        content:
+          'Understand the principles of qubits, superposition, and how quantum systems may change AI.',
+        image:
+          'https://images.unsplash.com/photo-1581090700227-1e37b190418e?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        id: '6',
+        title: '🛰️ Space Tech Innovations',
+        description:
+          'Join our event exploring satellite systems and aerospace software engineering.',
+        postType: 'Event',
+        numberOfLikes: 28,
+        numberOfComments: 9,
+        content:
+          'Speakers from NASA and SpaceX share insights on software reliability in space missions.',
+        image:
+          'https://images.unsplash.com/photo-1473923377535-0002805f57b8?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        id: '7',
+        title: '📱 Mobile Dev Meetup',
+        description:
+          'Developers discuss cross-platform frameworks and mobile UX trends.',
+        postType: 'Discussion',
+        numberOfLikes: 24,
+        numberOfComments: 6,
+        content:
+          'React Native vs Flutter — which one’s the best for performance and scalability?',
+        image:
+          'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+      },
+    ];
+setTimeout(() => {
+     setPosts(examplePosts);
+    setFilteredPosts(examplePosts);
+      
+    }, 0);
+  
   }, []);
 
   useEffect(() => {
     let filtered = posts;
     if (searchTerm) {
       filtered = filtered.filter(
-        (post:        Post) =>
+        (post: Post) =>
           post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           post.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -98,71 +133,95 @@ export default function PostsPage() {
     if (filterType !== 'all') {
       filtered = filtered.filter((post: Post) => post.postType === filterType);
     }
+    setTimeout(() => {
     setFilteredPosts(filtered);
+      
+    }, 0);
   }, [searchTerm, filterType, posts]);
 
-  const handleLike = async (postId: string) => {
-    try {
-      await api.likePost(postId);
-      const data = await api.getPosts();
-      setPosts(data);
-    } catch (err: unknown | Error) {
-      setError(err instanceof Error ? err.message || 'Failed to like post.' : 'Failed to like post.');
-    }
+  const handleLike = (postId: string) => {
+    setPosts((prev: Post[]) =>
+      prev.map((p) =>
+        p.id === postId ? { ...p, numberOfLikes: p.numberOfLikes + 1 } : p
+      )
+    );
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-pink-50 to-red-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-600 mx-auto"></div>
-          <p className="mt-6 text-lg text-gray-600 font-medium">Loading posts...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-transparent from-gray-50 via-pink-50 to-red-50">
+    <div className="min-h-screen  bg-filter from-blue-50 via-sky-50 to-indigo-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-blue-500 text-blue-700"
+              >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">
-                Community Feed
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                GCL Community Feed
               </h1>
-              <p className="text-gray-600 mt-1">Stay updated with the latest posts and announcements</p>
+              <p className="text-gray-600 mt-1">
+                Explore, share, and learn with developers and innovators 💻
+              </p>
             </div>
           </div>
-          <Link href="/post/create">
-            <Button className="bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-700 hover:to-red-700">
-              <PlusCircle className="w-5 h-5 mr-2" />
-              Create Post
-            </Button>
-          </Link>
+          
         </div>
 
-        {/* Posts List */}
+        <div className="flex items-center gap-2 mb-6">
+          <Input
+            placeholder="Search posts..."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            className="flex-1 border-blue-300 focus:border-blue-500"
+          />
+          <Select value={filterType} onValueChange={(v: string) => setFilterType(v)}>
+            <SelectTrigger className="w-40 border-blue-300 text-blue-700">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="Workshop">Workshops</SelectItem>
+              <SelectItem value="Event">Events</SelectItem>
+              <SelectItem value="Seminar">Seminars</SelectItem>
+              <SelectItem value="Discussion">Discussions</SelectItem>
+              <SelectItem value="Announcement">Announcements</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="space-y-6">
           {filteredPosts.map((post: Post) => (
-            <Card key={post.id} className="shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden">
-              <CardContent>
-                <h3 className="text-xl font-bold text-gray-900">{post.title}</h3>
-                <p className="text-gray-700 mb-2">{post.description}</p>
+            <Card
+              key={post.id}
+              className="shadow-lg hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden bg-white/90"
+            >
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-56 object-cover"
+              />
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-blue-800">{post.title}</h3>
+                <p className="text-gray-700 mb-3">{post.description}</p>
                 <div className="flex items-center gap-4">
-                  <Button size="sm" onClick={() => handleLike(post.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleLike(post.id)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
                     <Heart className="w-4 h-4 mr-1" /> {post.numberOfLikes}
                   </Button>
                   <div className="flex items-center gap-1 text-gray-500">
                     <MessageCircle className="w-4 h-4" /> {post.numberOfComments}
                   </div>
-                  {post.numberOfLikes > 10 && (
-                    <div className="ml-auto text-green-600 flex items-center gap-1 text-xs font-semibold">
+                  {post.numberOfLikes > 25 && (
+                    <div className="ml-auto text-blue-600 flex items-center gap-1 text-xs font-semibold">
                       <TrendingUp className="w-4 h-4" /> Trending
                     </div>
                   )}

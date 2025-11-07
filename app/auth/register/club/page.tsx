@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { registerClub } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -22,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert } from '@/components/ui/Alert';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle ,X,Upload} from 'lucide-react';
 import Image from 'next/image';
 export default function CreateClubPage() {
   const router = useRouter();
@@ -57,25 +58,52 @@ export default function CreateClubPage() {
     };
     reader.readAsDataURL(file);
   };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  try {
+const payload = {
+  name: formData.clubName,
+  email: formData.clubEmail,
+  password: formData.clubPassword,
+  description: formData.clubDescription,
+  mission: "Our mission is to empower students.",
+  contact_email: formData.clubEmail,
+  website: "https://example.com",
+  personality_style: "friendly",
+};
 
-    try {
-      await new Promise((res) => setTimeout(res, 1000)); // simulate API
-      localStorage.setItem('userType', 'club');
-      localStorage.setItem('clubData', JSON.stringify(formData));
-      localStorage.setItem('profilePhoto', formData.clubLogo);
-      window.dispatchEvent(new Event('storage')); // force Sidebar update
-      router.push('/club/dashboard');
-    } catch {
-      setError('Failed to create club. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    const res = await registerClub(payload);
+    localStorage.setItem("profilePhoto", formData.clubLogo);
+
+
+    console.log("✅ Registered club:", res);
+
+    localStorage.setItem("userType", "club");
+    localStorage.setItem("clubData", JSON.stringify(formData));
+    localStorage.setItem("profilePhoto", formData.clubLogo);
+    window.dispatchEvent(new Event("storage"));
+
+    router.push("/dashboard/club");
+  } catch (err) {
+    console.error(err);
+    setError("Failed to create club. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ 
+  
+
+    const handleRemoveImage = () => {
+        localStorage.removeItem('profilePhoto');
+        setFormData({ ...formData, clubLogo: '' });
+    };
 
   return (
     <div className="min-h-screen bg-transparent py-8">
@@ -169,27 +197,68 @@ export default function CreateClubPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Club Logo</Label>
-                <div className="flex flex-col items-center">
-                  {formData.clubLogo ? (
-                    <Image
-      src={formData.clubLogo}
-      alt="Club Logo Preview"
-      className="w-24 h-24 rounded-full object-cover mb-2 border"
-      width={240} 
-      height={240}
-      quality={90} 
-      priority 
-    />
-  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                      <span className="text-gray-500 text-sm">No Logo</span>
-                    </div>
-                  )}
+             <div className="space-y-2">
+                                <Label htmlFor="clubImage">Club Image</Label>
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-white/90 hover:border-blue-400 transition-colors">
+                                    {formData.clubLogo ? (
+                                        <div className="space-y-3">
+                                            <div className="relative mx-auto w-32 h-32">
+                                                <img
+                                                    src={formData.clubLogo}
+                                                    alt="Club preview"
+                                                    className="w-full h-full object-cover rounded-lg shadow-md"
+                                                />
+                                                <button title='j'
+                                                    type="button"
+                                                    onClick={handleRemoveImage}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <p className="text-sm text-green-600">✓ Image uploaded successfully</p>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => document.getElementById('clubImage')?.click()}
+                                                className="flex items-center gap-2 mx-auto"
+                                            >
+                                                <Upload className="w-4 h-4" />
+                                                Change Image
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <div className="space-y-1">
+                                                <p className="text-sm text-gray-600">
+                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    PNG, JPG, GIF up to 10MB
+                                                </p>
+                                            </div>
+                                            <Input
+                                                id="clubImage"
+                                                name="clubImage"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                className="hidden"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => document.getElementById('clubImage')?.click()}
+                                                className="flex items-center gap-2 mx-auto"
+                                            >
+                                                <Upload className="w-4 h-4" />
+                                                Upload Image
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                   <Input type="file" accept="image/*" onChange={handleImageUpload} />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="clubDescription">Description *</Label>

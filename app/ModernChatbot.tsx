@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, X, Loader2 } from 'lucide-react';
-import Image from 'next/image';
-import Axios from 'axios';
 
 interface Message {
   id: string;
@@ -12,15 +10,15 @@ interface Message {
   timestamp: Date;
 }
 
-
 const API_URL = 'https://sys-multi-agents.onrender.com';
+
 export default function ModernChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: '1',
       type: 'bot',
-      text: "👋 Hi there! I'm your Club Hub AI assistant. How can I help you today?",
+      text: "🤖 Hi there! I'm your Club Hub AI assistant. How can I help you today?",
       timestamp: new Date(),
     },
   ]);
@@ -28,12 +26,8 @@ export default function ModernChatbot() {
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(1);
   const messagesEndRef = useRef(null);
-  
 
-  const scrollToBottom = () =>
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-
-
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => scrollToBottom(), [messages]);
 
   const handleOpen = () => {
@@ -42,33 +36,24 @@ export default function ModernChatbot() {
   };
 
   const addBotMessage = (text: string) =>
-    setMessages((prev: Message[]) => [
-      ...prev,
-      { id: Date.now().toString(), type: 'bot', text, timestamp: new Date() },
-    ]);
+    setMessages((prev: Message[]) => [...prev, { id: Date.now().toString(), type: 'bot', text, timestamp: new Date() }]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      text: input,
-      timestamp: new Date(),
-    };
+    const userMessage: Message = { id: Date.now().toString(), type: 'user', text: input, timestamp: new Date() };
     setMessages((prev: Message[]) => [...prev, userMessage]);
     const userInput = input;
     setInput('');
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/chat/club`, {
+      const res = await fetch(`${API_URL}/agents/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          club_id: 1,
-          club_personality: 'friendly',
-          question: userInput,
-        }),
+  "context": {},
+  "query": userInput
+}),
       });
 
       if (res.ok) {
@@ -94,36 +79,24 @@ export default function ModernChatbot() {
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-all flex items-center justify-center bg-gradient-to-r from-cyan-500 via-blue-300 to-purple-100 z-50"
+          className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-all flex items-center justify-center bg-gradient-to-br from-[#FF0000] via-[#00BF63] to-[#FFCC00] z-50"
         >
-          <Image
-            src="/component.svg"
-            alt="Chatbot Icon"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
+          <div className="text-3xl">🤖</div>
           {unreadCount > 0 && (
-            <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-white">
+            <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-600 text-white text-xs font-bold flex items-center justify-center rounded-full border-2 border-white">
               {unreadCount}
             </div>
           )}
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-[420px] max-w-[90vw] h-[680px] max-h-[80vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 z-50 animate-fadeIn">
-          {/* Header */}
-          <div className="flex-shrink-0 p-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-between">
+          <div className="flex-shrink-0 p-5 bg-gradient-to-r from-[#FF0000] via-[#00BF63] to-[#FFCC00] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Image
-                src="/component.svg"
-                alt="Club Hub Logo"
-                width={40}
-                height={40}
-                className="rounded-full border border-white/50"
-              />
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 text-2xl">
+                🤖
+              </div>
               <div>
                 <h3 className="text-white font-semibold text-lg">Club Hub AI</h3>
                 <p className="text-white/80 text-sm">Always here to help 💬</p>
@@ -138,19 +111,13 @@ export default function ModernChatbot() {
             </button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 scrollbar-hide">
             {messages.map((msg: Message) => (
-              <div
-                key={msg.id}
-                className={`flex ${
-                  msg.type === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
+              <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`px-4 py-3 rounded-2xl max-w-[80%] shadow ${
                     msg.type === 'user'
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
+                      ? 'bg-gradient-to-r from-[#2563EB] to-[#00BF63] text-white'
                       : 'bg-white text-gray-800 border border-gray-200'
                   }`}
                 >
@@ -168,7 +135,6 @@ export default function ModernChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
           <div className="flex-shrink-0 p-4 border-t bg-white flex items-center gap-3">
             <input
               type="text"
@@ -176,18 +142,14 @@ export default function ModernChatbot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:ring-2 focus:ring-cyan-500 text-sm outline-none"
+              className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:ring-2 focus:ring-[#00BF63] text-sm outline-none"
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading}
-              className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white hover:scale-105 transition"
+              className="w-10 h-10 bg-gradient-to-r from-[#FF0000] to-[#00BF63] rounded-full flex items-center justify-center text-white hover:scale-105 transition"
             >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>
           </div>
         </div>

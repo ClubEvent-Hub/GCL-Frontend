@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert } from '@/components/ui/Alert';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-
+import { registerStudent } from '@/lib/api';
 export default function StudentRegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -53,19 +53,32 @@ export default function StudentRegisterPage() {
     setError('');
     setLoading(true);
 
+  
     try {
-      await new Promise((res) => setTimeout(res, 1000)); 
-      localStorage.setItem('userType', 'student');
+    const payload = {
+      name: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      field_of_study: formData.major,
+      year_level: 1, 
+    };
+     await new Promise((res) => setTimeout(res, 1000)); 
+     
+
+    const res = await registerStudent(payload);
+    console.log("✅ Registered student:", res);
+
+    router.push("/dashboard/student");
+  } catch (err:unknown | Error) {
+    setError(err instanceof Error ? err.message || "Registration failed. Please try again.": "Registration failed. Please try again.");
+  } finally {
+    setLoading(false);
+     localStorage.setItem('userType', 'student');
       localStorage.setItem('studentData', JSON.stringify(formData));
       localStorage.setItem('profilePhoto', formData.photo);
       window.dispatchEvent(new Event('storage')); 
-      router.push('/dashboard/student');
-    } catch {
-      setError('Failed to register. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-transparent py-8">

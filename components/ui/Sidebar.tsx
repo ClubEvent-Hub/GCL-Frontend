@@ -4,14 +4,23 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Home, Users, Calendar, FileText, LogOut, Menu, X,
-  Building2, User2, Globe,
+  Home,
+  Users,
+  Calendar,
+  FileText,
+  LogOut,
+  Menu,
+  X,
+  Building2,
+  User2,
+  Globe,
+  LayoutDashboard,
 } from 'lucide-react';
-import { LayoutDashboard } from 'lucide-react';
 
 export default function Sidebar() {
   const [userType, setUserType] = useState(null);
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -21,8 +30,10 @@ export default function Sidebar() {
     const updateUser = () => {
       const type = localStorage.getItem('userType');
       const photo = localStorage.getItem('profilePhoto');
+      const user = localStorage.getItem('user');
       setUserType(type);
       setProfilePhoto(photo);
+      setUserData(user ? JSON.parse(user) : null);
     };
 
     updateUser();
@@ -66,9 +77,9 @@ export default function Sidebar() {
         ]
       : [
           { name: 'Home', href: '/', icon: Home },
-          { name: 'Clubs', href: '/clubs', icon: Users },
-          { name: 'Events', href: '/event', icon: Calendar },
-          { name: 'Posts', href: '/post', icon: FileText },
+          { name: 'Clubs', href: '/auth/register', icon: Users, restricted: true },
+          { name: 'Events', href: '/auth/register', icon: Calendar, restricted: true },
+          { name: 'Posts', href: '/auth/register', icon: FileText, restricted: true },
         ];
 
   const LogoIcon = userType === 'club' ? Building2 : userType === 'student' ? User2 : Globe;
@@ -101,13 +112,21 @@ export default function Sidebar() {
           )}
 
           {!isCollapsed && (
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#2563EB] to-[#00BF63] bg-clip-text text-transparent">
-              {userType === 'club'
-                ? 'Club Panel'
-                : userType === 'student'
-                ? 'Student Panel'
-                : 'Visitor'}
-            </h2>
+            <>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#2563EB] to-[#00BF63] bg-clip-text text-transparent">
+                {userType === 'club'
+                  ? 'Club Panel'
+                  : userType === 'student'
+                  ? 'Student Panel'
+                  : 'Visitor'}
+              </h2>
+              {userData?.name && (
+                <p className="text-sm text-gray-600 mt-1">{userData.name}</p>
+              )}
+              {userData?.email && (
+                <p className="text-xs text-gray-500">{userData.email}</p>
+              )}
+            </>
           )}
         </div>
 
@@ -115,20 +134,32 @@ export default function Sidebar() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
+            const restricted = item.restricted && userType === null;
+
             return (
-              <Link
+              <button
                 key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all font-medium ${
-                  active
-                    ? 'bg-gradient-to-r from-[#2563EB] to-[#00BF63] text-white shadow-md'
-                    : 'text-[#000000] hover:bg-[#FFCC00]/20 hover:text-[#2563EB]'
-                } ${isCollapsed ? 'justify-center' : ''}`}
-                onClick={() => !isDesktop && setIsOpen(false)}
+                onClick={() => {
+                  if (restricted) {
+                    alert('Please login to access this section.');
+                  } else {
+                    window.location.href = item.href;
+                    if (!isDesktop) setIsOpen(false);
+                  }
+                }}
+                disabled={restricted}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all font-medium w-full text-left
+                  ${
+                    active
+                      ? 'bg-gradient-to-r from-[#2563EB] to-[#00BF63] text-white shadow-md'
+                      : restricted
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-[#000000] hover:bg-[#FFCC00]/20 hover:text-[#2563EB]'
+                  } ${isCollapsed ? 'justify-center' : ''}`}
               >
                 <Icon className="w-5 h-5" />
                 {!isCollapsed && <span>{item.name}</span>}
-              </Link>
+              </button>
             );
           })}
         </nav>

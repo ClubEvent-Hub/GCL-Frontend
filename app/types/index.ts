@@ -2,14 +2,14 @@ import Image from 'next/image';
 import { CardDescription } from '@/components/ui/card';
 export interface Student {
   id?: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   password?: string;
   profilePicture?: string;
-  fieldOfStudy: string;
-  university: string;
-  matricule: string;
+  fieldOfStudy?: string;
+  university?: string;
+  matricule?: string;
 }
 
 export type Club = {
@@ -30,6 +30,7 @@ export type Club = {
 
 export interface Event {
   id?: string;
+  Id:number
   eventName: string;
   eventStartDate: string;
   eventEndDate: string;
@@ -51,7 +52,13 @@ export interface Event {
   title: string
   image: string
   description: string
-  
+  eventImage : string;
+  event_type: string
+  organizer: string
+  attendees: string
+  location: string
+  current_registrations: string
+  club_id: string
 }
 
 export interface Post {
